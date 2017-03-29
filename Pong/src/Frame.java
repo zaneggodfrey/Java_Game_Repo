@@ -1,7 +1,7 @@
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Frame;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -16,12 +16,13 @@ import javax.swing.JPanel;
 
 
 public class Home extends JPanel implements KeyListener, MouseListener{
-	static Background background = new Background();
-	static MainMenu mainmenu;
 	static Frame frame;
-	static double size;
-	static Game game;
-	int playerwalkingkeycode;
+	public static int width;
+	public static int height;
+	Paddle paddle[] = new Paddle[2];
+	Ball ball;
+	int counter = 0;
+	private boolean gamestate = false;
 	public Home(){
 		super(true);
 		addMouseListener(this);
@@ -29,12 +30,8 @@ public class Home extends JPanel implements KeyListener, MouseListener{
 		this.setFocusable(true);
 
 	}
-	
-
-	
-	
 	public static void main(String[] args) {
-		frame = new Frame("Scrooms");
+		frame = new Frame("Pong - By Zane, Andrew, and Manoli");
 		frame.addWindowListener(new WindowAdapter() {
 	        public void windowClosing(WindowEvent we) {
 	            frame.dispose();
@@ -57,31 +54,46 @@ public class Home extends JPanel implements KeyListener, MouseListener{
         }, 0, 25); 
 	}
 	public void update(){
-		if(background!=null)background.update();
-		if(mainmenu!=null)mainmenu.update();
-		if(game!=null){
-			game.update();
+		counter++;
+		if(paddle[0]!=null){
+			paddle[0].update();
+			paddle[1].update();
 		}
+		if(ball!=null)ball.update();
 		repaint();
 	}
 	public void paint(Graphics g){
-		Graphics2D g2 = (Graphics2D)g;
-		g2.setColor(Color.BLACK);
-		if(size==0){
-			size=g.getClipBounds().height;
-			mainmenu=new MainMenu();
+		width = g.getClipBounds().width;
+		height = g.getClipBounds().height;
+		g.setColor(Color.BLACK);
+		g.fillRect(0, 0, width, height);
+		Font font1 = new Font("Monospaced Bold", Font.BOLD, 80);
+		g.setFont(font1);
+		if(!gamestate && counter%20<10){
+			int textwidth = g.getFontMetrics().stringWidth("'Space' to start");
+			int x = width/2 - textwidth/2;
+			g.setColor(Color.white);
+			g.drawString("'Space' to start", x, height/2-40);
 		}
-		g2.fillRect(0, 0, g.getClipBounds().width, g.getClipBounds().height);
-		if(background!=null)background.paint(g2);
-		if(mainmenu!=null)mainmenu.paint(g2);
-		if(game!=null){
-			game.paint(g2);
+		else if(gamestate){
+			if(paddle[1]!=null){
+				paddle[0].paint(g);
+				paddle[1].paint(g);
+			}
+			if(ball!=null)ball.paint(g);
 		}
-		g.dispose();
+	}
+	public void startgame(){
+		ball = new Ball();
+		paddle[0]=new Paddle(false);
+		paddle[1]=new Paddle(true);
 	}
 	@Override
 	public void mouseClicked(MouseEvent arg0) {
-		// TODO Auto-generated method stub
+		if(!gamestate){
+			gamestate=true;
+			startgame();
+		}
 		
 	}
 	@Override
@@ -105,64 +117,16 @@ public class Home extends JPanel implements KeyListener, MouseListener{
 		
 	}
 	@Override
-	public void keyPressed(KeyEvent e) {
-		//controls main menu option scrolling
-		int keycode = e.getKeyCode();
-		if(mainmenu!=null){
-			if(keycode==38)mainmenu.indexUp();
-			else if(keycode==40)mainmenu.indexDown();
-			if(keycode==10)mainmenu.enterKeyPressed();
-		}
-		else{
-			if(game!=null){
-				if(game.player!=null){
-					if(keycode==40){
-						game.player.setDirection(0);
-						playerwalkingkeycode=40;
-					}
-					else if(keycode==37){
-						game.player.setDirection(2);
-						playerwalkingkeycode=37;
-					}
-					else if(keycode==38){
-						game.player.setDirection(1);
-						playerwalkingkeycode=38;
-					}
-					else if(keycode==39){
-						game.player.setDirection(3);
-						playerwalkingkeycode=39;
-					}
-				}
-				if(keycode==32){
-					boolean go = false;//checks if the spacebar destroys a textbox
-					for(int i = 0; i < game.objects.length;i++){
-						if(game.objects[i]!=null){
-							if(game.objects[i].textbox!=null){
-								if(game.objects[i].textbox.finished){
-									game.objects[i].textbox=null;
-									go = true;
-									break;
-								}
-							}
-						}
-					}
-					if(!go){//if the spacebar does not kill a textbox, see if it creates one.
-						for(int i = 0; i < game.objects.length;i++){
-							if(game.objects[i]!=null)game.objects[i].spacePressed();
-						}
-					}
-				}
-			}
+	public void keyPressed(KeyEvent arg0) {
+		if(!gamestate){
+			gamestate=true;
+			startgame();
 		}
 	}
 	@Override
-	public void keyReleased(KeyEvent e) {
-		int keycode = e.getKeyCode();
-		if(game!=null){
-			if(game.player!=null){
-				if(keycode==playerwalkingkeycode)game.player.stopWalking();
-			}
-		}
+	public void keyReleased(KeyEvent arg0) {
+		// TODO Auto-generated method stub
+		
 	}
 	@Override
 	public void keyTyped(KeyEvent arg0) {
