@@ -14,10 +14,17 @@ public class Paddle {
 		this.leftside = leftside;
 	}
 	public void update(){
-    counter++;
+		counter++;
+		if(leftside){
+			if(y<Home.height-height){
+				y+=4;
+			}
+		}
 		//called 40 times a second
 	}
-  
+	public void keyPressed(int keycode){
+		
+	}
 	public void paint(Graphics g){
 		int x;
 		if(leftside)x = distancefromside-width;
