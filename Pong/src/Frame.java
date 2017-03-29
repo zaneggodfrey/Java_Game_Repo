@@ -16,6 +16,9 @@ import javax.swing.JPanel;
 
 
 public class Home extends JPanel implements KeyListener, MouseListener{
+	int arrowkeystate = 0;
+	int wasdstate=0;
+	
 	static Frame frame;
 	public static int width;
 	public static int height;
@@ -31,7 +34,7 @@ public class Home extends JPanel implements KeyListener, MouseListener{
 
 	}
 	public static void main(String[] args) {
-		frame = new Frame("Pong - By Zane, Andrew, and Manoli");
+		frame = new Frame("Pong - By Zane, Andrew, Manoli, and Jade");
 		frame.addWindowListener(new WindowAdapter() {
 	        public void windowClosing(WindowEvent we) {
 	            frame.dispose();
@@ -117,14 +120,31 @@ public class Home extends JPanel implements KeyListener, MouseListener{
 		
 	}
 	@Override
-	public void keyPressed(KeyEvent arg0) {
+	public void keyPressed(KeyEvent e) {
 		if(!gamestate){
 			gamestate=true;
 			startgame();
 		}
+		if(gamestate){
+			int k = e.getKeyCode();
+			for(int i = 0; i < paddle.length;i++){
+				if(paddle[1]!=null){
+					paddle[0].keyPressed(k);
+					paddle[1].keyPressed(k);
+				}
+			}
+			//up arrow - 38
+			//down arrow - 40
+			//w - 87
+			//s - 83
+			
+		}
 	}
 	@Override
-	public void keyReleased(KeyEvent arg0) {
+	public void keyReleased(KeyEvent e) {
+		if(gamestate){
+			
+		}
 		// TODO Auto-generated method stub
 		
 	}
@@ -134,3 +154,4 @@ public class Home extends JPanel implements KeyListener, MouseListener{
 		
 	}
 }
+
